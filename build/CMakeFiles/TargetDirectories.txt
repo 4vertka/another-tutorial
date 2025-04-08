@@ -1,6 +1,0 @@
-/home/alex/code/vvkguidef/build/CMakeFiles/VulkanSDLApp.dir
-/home/alex/code/vvkguidef/build/CMakeFiles/edit_cache.dir
-/home/alex/code/vvkguidef/build/CMakeFiles/rebuild_cache.dir
-/home/alex/code/vvkguidef/build/vk-bootstrap/CMakeFiles/vk-bootstrap.dir
-/home/alex/code/vvkguidef/build/vk-bootstrap/CMakeFiles/edit_cache.dir
-/home/alex/code/vvkguidef/build/vk-bootstrap/CMakeFiles/rebuild_cache.dir
