@@ -4,6 +4,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/VulkanSDLApp.dir/engine/main.cpp.o.d"
   "CMakeFiles/VulkanSDLApp.dir/engine/vk_engine.cpp.o"
   "CMakeFiles/VulkanSDLApp.dir/engine/vk_engine.cpp.o.d"
+  "CMakeFiles/VulkanSDLApp.dir/engine/vk_initializers.cpp.o"
+  "CMakeFiles/VulkanSDLApp.dir/engine/vk_initializers.cpp.o.d"
   "VulkanSDLApp"
   "VulkanSDLApp.pdb"
 )

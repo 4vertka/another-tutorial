@@ -11,6 +11,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/4.0.0/CMakeCCompiler.cmake"
   "CMakeFiles/4.0.0/CMakeCXXCompiler.cmake"
   "CMakeFiles/4.0.0/CMakeSystem.cmake"
+  "/home/alex/code/vvkguidef/vk-bootstrap/CMakeLists.txt"
+  "/home/alex/code/vvkguidef/vk-bootstrap/gen/CurrentBuildVulkanVersion.cmake"
   "/usr/lib/cmake/SDL2/SDL2Config.cmake"
   "/usr/lib/cmake/SDL2/SDL2ConfigVersion.cmake"
   "/usr/lib/cmake/SDL2/SDL2Targets-none.cmake"
@@ -147,9 +149,11 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/4.0.0/CMakeCXXCompiler.cmake"
   "CMakeFiles/4.0.0/CMakeCXXCompiler.cmake"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
+  "vk-bootstrap/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/VulkanSDLApp.dir/DependInfo.cmake"
+  "vk-bootstrap/CMakeFiles/vk-bootstrap.dir/DependInfo.cmake"
   )

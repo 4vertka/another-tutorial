@@ -314,4 +314,21 @@ CMakeFiles/VulkanSDLApp.dir/engine/main.cpp.o: \
  /usr/include/glm/detail/compute_common.hpp \
  /usr/include/glm/ext/matrix_double4x4_precision.hpp \
  /usr/include/glm/ext/matrix_float4x4.hpp \
- /usr/include/glm/ext/matrix_float4x4_precision.hpp
+ /usr/include/glm/ext/matrix_float4x4_precision.hpp \
+ /usr/include/c++/14.2.1/iostream /usr/include/c++/14.2.1/ostream \
+ /usr/include/c++/14.2.1/ios /usr/include/c++/14.2.1/bits/ios_base.h \
+ /usr/include/c++/14.2.1/bits/locale_classes.h \
+ /usr/include/c++/14.2.1/bits/locale_classes.tcc \
+ /usr/include/c++/14.2.1/streambuf \
+ /usr/include/c++/14.2.1/bits/streambuf.tcc \
+ /usr/include/c++/14.2.1/bits/basic_ios.h \
+ /usr/include/c++/14.2.1/bits/locale_facets.h \
+ /usr/include/c++/14.2.1/cwctype /usr/include/wctype.h \
+ /usr/include/bits/wctype-wchar.h \
+ /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/ctype_base.h \
+ /usr/include/c++/14.2.1/bits/streambuf_iterator.h \
+ /usr/include/c++/14.2.1/x86_64-pc-linux-gnu/bits/ctype_inline.h \
+ /usr/include/c++/14.2.1/bits/locale_facets.tcc \
+ /usr/include/c++/14.2.1/bits/basic_ios.tcc \
+ /usr/include/c++/14.2.1/bits/ostream.tcc /usr/include/c++/14.2.1/istream \
+ /usr/include/c++/14.2.1/bits/istream.tcc

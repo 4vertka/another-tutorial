@@ -4,9 +4,12 @@ VulkanSDLApp: \
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/crtbeginS.o \
   CMakeFiles/VulkanSDLApp.dir/engine/main.cpp.o \
   CMakeFiles/VulkanSDLApp.dir/engine/vk_engine.cpp.o \
+  CMakeFiles/VulkanSDLApp.dir/engine/vk_initializers.cpp.o \
   /lib/libvulkan.so \
   /usr/lib/libSDL2main.a \
   /usr/lib/libSDL2-2.0.so.0.3200.54 \
+  vk-bootstrap/libvk-bootstrap.a \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/../../../../lib/libdl.a \
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/../../../../lib/libstdc++.so \
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/../../../../lib/libm.so \
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/../../../../lib/libm.so \
@@ -45,11 +48,17 @@ CMakeFiles/VulkanSDLApp.dir/engine/main.cpp.o:
 
 CMakeFiles/VulkanSDLApp.dir/engine/vk_engine.cpp.o:
 
+CMakeFiles/VulkanSDLApp.dir/engine/vk_initializers.cpp.o:
+
 /lib/libvulkan.so:
 
 /usr/lib/libSDL2main.a:
 
 /usr/lib/libSDL2-2.0.so.0.3200.54:
+
+vk-bootstrap/libvk-bootstrap.a:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/../../../../lib/libdl.a:
 
 /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/../../../../lib/libstdc++.so:
 

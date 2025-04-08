@@ -1,7 +1,8 @@
 {
 	"InstallScripts" : 
 	[
-		"/home/alex/code/vvkguidef/build/cmake_install.cmake"
+		"/home/alex/code/vvkguidef/build/cmake_install.cmake",
+		"/home/alex/code/vvkguidef/build/vk-bootstrap/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

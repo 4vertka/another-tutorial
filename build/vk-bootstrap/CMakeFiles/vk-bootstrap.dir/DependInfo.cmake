@@ -8,10 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/alex/code/vvkguidef/engine/main.cpp" "CMakeFiles/VulkanSDLApp.dir/engine/main.cpp.o" "gcc" "CMakeFiles/VulkanSDLApp.dir/engine/main.cpp.o.d"
-  "/home/alex/code/vvkguidef/engine/vk_engine.cpp" "CMakeFiles/VulkanSDLApp.dir/engine/vk_engine.cpp.o" "gcc" "CMakeFiles/VulkanSDLApp.dir/engine/vk_engine.cpp.o.d"
-  "/home/alex/code/vvkguidef/engine/vk_initializers.cpp" "CMakeFiles/VulkanSDLApp.dir/engine/vk_initializers.cpp.o" "gcc" "CMakeFiles/VulkanSDLApp.dir/engine/vk_initializers.cpp.o.d"
-  "" "VulkanSDLApp" "gcc" "CMakeFiles/VulkanSDLApp.dir/link.d"
+  "/home/alex/code/vvkguidef/vk-bootstrap/src/VkBootstrap.cpp" "vk-bootstrap/CMakeFiles/vk-bootstrap.dir/src/VkBootstrap.cpp.o" "gcc" "vk-bootstrap/CMakeFiles/vk-bootstrap.dir/src/VkBootstrap.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

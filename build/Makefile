@@ -129,6 +129,19 @@ VulkanSDLApp/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/VulkanSDLApp.dir/build.make CMakeFiles/VulkanSDLApp.dir/build
 .PHONY : VulkanSDLApp/fast
 
+#=============================================================================
+# Target rules for targets named vk-bootstrap
+
+# Build rule for target.
+vk-bootstrap: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 vk-bootstrap
+.PHONY : vk-bootstrap
+
+# fast build rule for target.
+vk-bootstrap/fast:
+	$(MAKE) $(MAKESILENT) -f vk-bootstrap/CMakeFiles/vk-bootstrap.dir/build.make vk-bootstrap/CMakeFiles/vk-bootstrap.dir/build
+.PHONY : vk-bootstrap/fast
+
 engine/main.o: engine/main.cpp.o
 .PHONY : engine/main.o
 
@@ -177,6 +190,30 @@ engine/vk_engine.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/VulkanSDLApp.dir/build.make CMakeFiles/VulkanSDLApp.dir/engine/vk_engine.cpp.s
 .PHONY : engine/vk_engine.cpp.s
 
+engine/vk_initializers.o: engine/vk_initializers.cpp.o
+.PHONY : engine/vk_initializers.o
+
+# target to build an object file
+engine/vk_initializers.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/VulkanSDLApp.dir/build.make CMakeFiles/VulkanSDLApp.dir/engine/vk_initializers.cpp.o
+.PHONY : engine/vk_initializers.cpp.o
+
+engine/vk_initializers.i: engine/vk_initializers.cpp.i
+.PHONY : engine/vk_initializers.i
+
+# target to preprocess a source file
+engine/vk_initializers.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/VulkanSDLApp.dir/build.make CMakeFiles/VulkanSDLApp.dir/engine/vk_initializers.cpp.i
+.PHONY : engine/vk_initializers.cpp.i
+
+engine/vk_initializers.s: engine/vk_initializers.cpp.s
+.PHONY : engine/vk_initializers.s
+
+# target to generate assembly for a file
+engine/vk_initializers.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/VulkanSDLApp.dir/build.make CMakeFiles/VulkanSDLApp.dir/engine/vk_initializers.cpp.s
+.PHONY : engine/vk_initializers.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,12 +223,16 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... VulkanSDLApp"
+	@echo "... vk-bootstrap"
 	@echo "... engine/main.o"
 	@echo "... engine/main.i"
 	@echo "... engine/main.s"
 	@echo "... engine/vk_engine.o"
 	@echo "... engine/vk_engine.i"
 	@echo "... engine/vk_engine.s"
+	@echo "... engine/vk_initializers.o"
+	@echo "... engine/vk_initializers.i"
+	@echo "... engine/vk_initializers.s"
 .PHONY : help
 
 
