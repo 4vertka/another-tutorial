@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(VulkanSDLApp)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-
 file(GLOB SRC_FILES "./engine/*.cpp")
 
 # Find Vulkan
@@ -13,15 +10,16 @@ find_package(Vulkan REQUIRED)
 # Find SDL2
 find_package(SDL2 REQUIRED)
 
+# Add vk-bootstrap
 add_subdirectory(vk-bootstrap)
 file(GLOB VK_BOOTSTRAP_SRC "./vk-bootstrap/src/*.cpp")
-
 
 # Include directories
 include_directories(
     ${Vulkan_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
     vk-bootstrap/src
+    /usr/include  # ImGui headers
 )
 
 # Add the executable
@@ -29,16 +27,17 @@ add_executable(VulkanSDLApp
     ${SRC_FILES}
 )
 
-
+# Now that target exists, link ImGui
 target_link_libraries(VulkanSDLApp
     ${Vulkan_LIBRARIES}
     ${SDL2_LIBRARIES}
     vk-bootstrap::vk-bootstrap
+    imgui  # Link ImGui library
 )
 
+# Shader compilation
 set(SHADER_DIR "${CMAKE_SOURCE_DIR}/shaders")
 set(COMPILED_SHADER_DIR "${CMAKE_BINARY_DIR}/shaders")
-
 file(MAKE_DIRECTORY ${COMPILED_SHADER_DIR})
 
 add_custom_command(
