@@ -63,10 +63,6 @@ void VulkanEngine::cleanup() {
 
     vkDeviceWaitIdle(_device);
 
-    // ImGui_ImplVulkan_Shutdown();
-    // ImGui_ImplSDL2_Shutdown();
-    // ImGui::DestroyContext();
-
     for (int i = 0; i < FRAME_OVERLAP; i++) {
 
       vkDestroyCommandPool(_device, _frames[i]._commandPool, nullptr);
@@ -495,7 +491,6 @@ void VulkanEngine::init_background_pipelines() {
   VkShaderModule gradientShader;
   if (!vkutil::load_shader_module("../build/shaders/gradient.comp.spv", _device,
                                   &gradientShader)) {
-    // fmt::print("Error building compute shaders");
     std::cout << "error building compute shaders\n";
   }
 
@@ -552,9 +547,10 @@ void VulkanEngine::init_background_pipelines() {
   vkDestroyShaderModule(_device, skyShader, nullptr);
 
   _mainDeletionQueue.push_function([=]() {
+    // std::cout << "Destroying background pipelines\n";
     vkDestroyPipelineLayout(_device, _gradientPipelineLayout, nullptr);
-    vkDestroyPipeline(_device, sky.pipeline, nullptr);
-    vkDestroyPipeline(_device, gradient.pipeline, nullptr);
+    // vkDestroyPipeline(_device, sky.pipeline, nullptr);
+    // vkDestroyPipeline(_device, gradient.pipeline, nullptr);
   });
 }
 
