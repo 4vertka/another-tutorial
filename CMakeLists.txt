@@ -47,9 +47,17 @@ add_custom_command(
     COMMENT "compiling gradient.comp shader"
 )
 
+add_custom_command(                                                                                  
+    OUTPUT ${COMPILED_SHADER_DIR}/sky.comp.spv                                                  
+    COMMAND glslc ${SHADER_DIR}/sky.comp -o ${COMPILED_SHADER_DIR}/sky.comp.spv            
+    DEPENDS ${SHADER_DIR}/sky.comp                                                              
+    COMMENT "compiling sky.comp shader"                                                         
+)                                                                                                    
+
 add_custom_target(CompileShaders ALL
     DEPENDS
     ${COMPILED_SHADER_DIR}/gradient.comp.spv
+    ${COMPILED_SHADER_DIR}/sky.comp.spv
 )
 
 add_dependencies(VulkanSDLApp CompileShaders)
