@@ -1,5 +1,6 @@
 #pragma once
 
+#include "vk_descriptors.h"
 #include "vk_types.h"
 #include <functional>
 
@@ -76,6 +77,13 @@ public:
   AllocatedImage _drawImage;
   VkExtent2D _drawExtent;
 
+  DescriptorAllocator globalDescriptorAllocator;
+  VkDescriptorSet _drawImageDescriptors;
+  VkDescriptorSetLayout _drawImageDescriptorLayout;
+
+  VkPipeline _gradientPipeline;
+  VkPipelineLayout _gradientPipelineLayout;
+
 private:
   void init_vulkan();
   void init_swapchain();
@@ -86,4 +94,9 @@ private:
   void destroy_swapchain();
 
   void draw_background(VkCommandBuffer cmd);
+
+  void init_descriptors();
+
+  void init_pipelines();
+  void init_background_pipelines();
 };

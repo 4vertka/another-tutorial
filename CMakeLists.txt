@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 project(VulkanSDLApp)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 file(GLOB SRC_FILES "./engine/*.cpp")
@@ -34,3 +35,22 @@ target_link_libraries(VulkanSDLApp
     ${SDL2_LIBRARIES}
     vk-bootstrap::vk-bootstrap
 )
+
+set(SHADER_DIR "${CMAKE_SOURCE_DIR}/shaders")
+set(COMPILED_SHADER_DIR "${CMAKE_BINARY_DIR}/shaders")
+
+file(MAKE_DIRECTORY ${COMPILED_SHADER_DIR})
+
+add_custom_command(
+    OUTPUT ${COMPILED_SHADER_DIR}/gradient.comp.spv 
+    COMMAND glslc ${SHADER_DIR}/gradient.comp -o ${COMPILED_SHADER_DIR}/gradient.comp.spv
+    DEPENDS ${SHADER_DIR}/gradient.comp
+    COMMENT "compiling gradient.comp shader"
+)
+
+add_custom_target(CompileShaders ALL
+    DEPENDS
+    ${COMPILED_SHADER_DIR}/gradient.comp.spv
+)
+
+add_dependencies(VulkanSDLApp CompileShaders)
