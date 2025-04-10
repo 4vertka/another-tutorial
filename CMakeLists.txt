@@ -68,12 +68,20 @@ add_custom_command(
     COMMENT "compiling color_triangle.frag shader"                                                                          
 )                                                                                                                
 
+add_custom_command(                                                                                                        
+    OUTPUT ${COMPILED_SHADER_DIR}/colored_triangle_mesh.vert.spv                                                             
+    COMMAND glslc ${SHADER_DIR}/colored_triangle_mesh.vert -o ${COMPILED_SHADER_DIR}/colored_triangle_mesh.vert.spv                      
+    DEPENDS ${SHADER_DIR}/colored_triangle_mesh.vert                                                                              
+    COMMENT "compiling colored_triangle_mesh.vert shader"                                                                         
+)                                                                                                                          
+
 add_custom_target(CompileShaders ALL
     DEPENDS
     ${COMPILED_SHADER_DIR}/gradient.comp.spv
     ${COMPILED_SHADER_DIR}/sky.comp.spv
     ${COMPILED_SHADER_DIR}/color_triangle.vert.spv
     ${COMPILED_SHADER_DIR}/color_triangle.frag.spv
+    ${COMPILED_SHADER_DIR}/colored_triangle_mesh.vert.spv
 )
 
 add_dependencies(VulkanSDLApp CompileShaders)
