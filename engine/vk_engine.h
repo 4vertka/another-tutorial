@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vk_descriptors.h"
+#include "vk_pipelines.h"
 #include "vk_types.h"
 #include <functional>
 
@@ -109,6 +110,11 @@ public:
   std::vector<ComputeEffect> backgroundEffects;
   int currentBackgroundEffect{0};
 
+  VkPipelineLayout _trianglePipelineLayout;
+  VkPipeline _trianglePipeline;
+
+  void init_triangle_pipeline();
+
 private:
   void init_vulkan();
   void init_swapchain();
@@ -128,4 +134,6 @@ private:
   void init_imgui();
 
   void draw_imgui(VkCommandBuffer cmd, VkImageView targetImageView);
+
+  void draw_geometry(VkCommandBuffer cmd);
 };

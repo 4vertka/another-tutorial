@@ -54,10 +54,26 @@ add_custom_command(
     COMMENT "compiling sky.comp shader"                                                         
 )                                                                                                    
 
+add_custom_command(                                                                                              
+    OUTPUT ${COMPILED_SHADER_DIR}/color_triangle.vert.spv                                                        
+    COMMAND glslc ${SHADER_DIR}/color_triangle.vert -o ${COMPILED_SHADER_DIR}/color_triangle.vert.spv               
+    DEPENDS ${SHADER_DIR}/color_triangle.vert                                                                         
+    COMMENT "compiling color_triangle.vert shader"                                                                     
+)                                                                                                                
+                                                                                                                 
+add_custom_command(                                                                                              
+    OUTPUT ${COMPILED_SHADER_DIR}/color_triangle.frag.spv                                                                  
+    COMMAND glslc ${SHADER_DIR}/color_triangle.frag -o ${COMPILED_SHADER_DIR}/color_triangle.frag.spv                                 
+    DEPENDS ${SHADER_DIR}/color_triangle.frag                                                                               
+    COMMENT "compiling color_triangle.frag shader"                                                                          
+)                                                                                                                
+
 add_custom_target(CompileShaders ALL
     DEPENDS
     ${COMPILED_SHADER_DIR}/gradient.comp.spv
     ${COMPILED_SHADER_DIR}/sky.comp.spv
+    ${COMPILED_SHADER_DIR}/color_triangle.vert.spv
+    ${COMPILED_SHADER_DIR}/color_triangle.frag.spv
 )
 
 add_dependencies(VulkanSDLApp CompileShaders)
