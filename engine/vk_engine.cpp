@@ -5,13 +5,22 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
 #include <cmath>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/trigonometric.hpp>
 
 #include "../vk-bootstrap/src/VkBootstrap.h"
 #include "vk_initializers.h"
+#include "vk_loader.h"
 #include "vk_types.h"
 
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/transform.hpp"
 
 #include <imgui.h>
 
@@ -76,6 +85,11 @@ void VulkanEngine::cleanup() {
       _frames[i]._deletionQueue.flush();
     }
 
+    for (auto &mesh : testMeshes) {
+      destroy_buffer(mesh->meshBuffers.indexBuffer);
+      destroy_buffer(mesh->meshBuffers.vertexBuffer);
+    }
+
     _mainDeletionQueue.flush();
 
     destroy_swapchain();
@@ -124,6 +138,9 @@ void VulkanEngine::draw() {
 
   vkutil::transition_image(cmd, _drawImage.image, VK_IMAGE_LAYOUT_GENERAL,
                            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+  vkutil::transition_image(cmd, _depthImage.image, VK_IMAGE_LAYOUT_GENERAL,
+                           VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
 
   draw_geometry(cmd);
 
@@ -325,9 +342,29 @@ void VulkanEngine::init_swapchain() {
   VK_CHECK(
       vkCreateImageView(_device, &rview_info, nullptr, &_drawImage.imageView));
 
+  _depthImage.imageFormat = VK_FORMAT_D32_SFLOAT;
+  _depthImage.imageExtent = drawImageExtent;
+  VkImageUsageFlags depthImageUsages{};
+  depthImageUsages |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+  VkImageCreateInfo dimg_info = vkinit::image_create_info(
+      _depthImage.imageFormat, depthImageUsages, drawImageExtent);
+
+  vmaCreateImage(_allocator, &dimg_info, &rimg_allocinfo, &_depthImage.image,
+                 &_depthImage.allocation, nullptr);
+
+  VkImageViewCreateInfo dview_info = vkinit::imageview_create_info(
+      _depthImage.imageFormat, _depthImage.image, VK_IMAGE_ASPECT_DEPTH_BIT);
+
+  VK_CHECK(
+      vkCreateImageView(_device, &dview_info, nullptr, &_depthImage.imageView));
+
   _mainDeletionQueue.push_function([=]() {
     vkDestroyImageView(_device, _drawImage.imageView, nullptr);
     vmaDestroyImage(_allocator, _drawImage.image, _drawImage.allocation);
+
+    vkDestroyImageView(_device, _depthImage.imageView, nullptr);
+    vmaDestroyImage(_allocator, _depthImage.image, _depthImage.allocation);
   });
 }
 
@@ -431,10 +468,6 @@ void VulkanEngine::draw_background(VkCommandBuffer cmd) {
   vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_COMPUTE,
                           _gradientPipelineLayout, 0, 1, &_drawImageDescriptors,
                           0, nullptr);
-
-  // ComputePushConstants pc;
-  // pc.data1 = glm::vec4(1, 0, 0, 1);
-  // pc.data2 = glm::vec4(0, 0, 1, 1);
 
   vkCmdPushConstants(cmd, _gradientPipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT,
                      0, sizeof(ComputePushConstants), &effect.data);
@@ -718,11 +751,15 @@ void VulkanEngine::init_triangle_pipeline() {
 
 void VulkanEngine::draw_geometry(VkCommandBuffer cmd) {
 
-  VkRenderingAttachmentInfo colorAttachment =
-      vkinit::attachment_info(_drawImage.imageView, nullptr);
+  VkRenderingAttachmentInfo colorAttachment = vkinit::attachment_info(
+      _drawImage.imageView, nullptr, VK_IMAGE_LAYOUT_GENERAL);
+
+  VkRenderingAttachmentInfo depthAttachment = vkinit::depth_attachment_info(
+      _depthImage.imageView, VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
 
   VkRenderingInfo renderInfo =
-      vkinit::rendering_info(_drawExtent, &colorAttachment, nullptr);
+      vkinit::rendering_info(_windowExtent, &colorAttachment, &depthAttachment);
+
   vkCmdBeginRendering(cmd, &renderInfo);
 
   vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, _trianglePipeline);
@@ -753,12 +790,33 @@ void VulkanEngine::draw_geometry(VkCommandBuffer cmd) {
   push_constants.worldMatrix = glm::mat4{1.f};
   push_constants.vertexBuffer = rectangle.vertexBufferAddress;
 
+  glm::mat4 view = glm::translate(glm::vec3{0, 0, -5});
+
+  glm::mat4 projection = glm::perspective(
+      glm::radians(70.f), (float)_drawExtent.width / (float)_drawExtent.height,
+      10000.f, 0.1f);
+
+  projection[1][1] *= -1;
+
+  push_constants.worldMatrix = projection * view;
+
   vkCmdPushConstants(cmd, _meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0,
                      sizeof(GPUDrawPushConstants), &push_constants);
   vkCmdBindIndexBuffer(cmd, rectangle.indexBuffer.buffer, 0,
                        VK_INDEX_TYPE_UINT32);
 
   vkCmdDrawIndexed(cmd, 6, 1, 0, 0, 0);
+
+  // push_constants.vertexBuffer =
+  // testMeshes[2]->meshBuffers.vertexBufferAddress;
+
+  // vkCmdPushConstants(cmd, _meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0,
+  //                   sizeof(GPUDrawPushConstants), &push_constants);
+  // vkCmdBindIndexBuffer(cmd, testMeshes[2]->meshBuffers.indexBuffer.buffer, 0,
+  //                      VK_INDEX_TYPE_UINT32);
+
+  // vkCmdDrawIndexed(cmd, testMeshes[2]->surfaces[0].count, 1,
+  //                  testMeshes[2]->surfaces[0].startIndex, 0, 0);
 
   vkCmdEndRendering(cmd);
 }
@@ -792,58 +850,81 @@ void VulkanEngine::destroy_buffer(const AllocatedBuffer &buffer) {
 GPUMeshBuffers VulkanEngine::uploadMesh(std::span<uint32_t> indices,
                                         std::span<Vertex> vertices) {
 
+  if (vertices.empty() || indices.empty()) {
+    std::cerr << "Error: Attempted to upload mesh with empty data" << std::endl;
+    return {}; // Return empty buffer or throw an exception
+  }
+
   const size_t vertexBufferSize = vertices.size() * sizeof(Vertex);
   const size_t indexBufferSize = indices.size() * sizeof(uint32_t);
 
   GPUMeshBuffers newSurface;
 
-  newSurface.vertexBuffer = create_buffer(
-      vertexBufferSize,
-      VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-          VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-      VMA_MEMORY_USAGE_GPU_ONLY);
+  try {
 
-  VkBufferDeviceAddressInfo deviceAddressInfo{
-      .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
-      .buffer = newSurface.vertexBuffer.buffer};
+    newSurface.vertexBuffer = create_buffer(
+        vertexBufferSize,
+        VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+            VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+        VMA_MEMORY_USAGE_GPU_ONLY);
 
-  newSurface.vertexBufferAddress =
-      vkGetBufferDeviceAddress(_device, &deviceAddressInfo);
+    VkBufferDeviceAddressInfo deviceAddressInfo{
+        .sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
+        .buffer = newSurface.vertexBuffer.buffer};
 
-  newSurface.indexBuffer = create_buffer(indexBufferSize,
-                                         VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
-                                             VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                                         VMA_MEMORY_USAGE_GPU_ONLY);
+    newSurface.vertexBufferAddress =
+        vkGetBufferDeviceAddress(_device, &deviceAddressInfo);
 
-  AllocatedBuffer staging = create_buffer(vertexBufferSize + indexBufferSize,
-                                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                                          VMA_MEMORY_USAGE_CPU_ONLY);
+    newSurface.indexBuffer = create_buffer(indexBufferSize,
+                                           VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
+                                               VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                           VMA_MEMORY_USAGE_GPU_ONLY);
 
-  void *data = staging.allocation->GetMappedData();
+    AllocatedBuffer staging = create_buffer(vertexBufferSize + indexBufferSize,
+                                            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                            VMA_MEMORY_USAGE_CPU_ONLY);
 
-  memcpy(data, vertices.data(), vertexBufferSize);
-  memcpy((char *)data + vertexBufferSize, indices.data(), indexBufferSize);
+    void *data = staging.allocation->GetMappedData();
 
-  immediate_submit([&](VkCommandBuffer cmd) {
-    VkBufferCopy vertexCopy{0};
-    vertexCopy.dstOffset = 0;
-    vertexCopy.srcOffset = 0;
-    vertexCopy.size = vertexBufferSize;
+    if (!data) {
+      std::cerr << "Failed to map staging buffer memory" << std::endl;
+      destroy_buffer(newSurface.vertexBuffer);
+      destroy_buffer(newSurface.indexBuffer);
+      destroy_buffer(staging);
+      return {};
+    }
 
-    vkCmdCopyBuffer(cmd, staging.buffer, newSurface.vertexBuffer.buffer, 1,
-                    &vertexCopy);
+    memcpy(data, vertices.data(), vertexBufferSize);
+    memcpy((char *)data + vertexBufferSize, indices.data(), indexBufferSize);
 
-    VkBufferCopy indexCopy{0};
-    indexCopy.dstOffset = 0;
-    indexCopy.srcOffset = vertexBufferSize;
-    indexCopy.size = indexBufferSize;
+    immediate_submit([&](VkCommandBuffer cmd) {
+      VkBufferCopy vertexCopy{0};
+      vertexCopy.dstOffset = 0;
+      vertexCopy.srcOffset = 0;
+      vertexCopy.size = vertexBufferSize;
 
-    vkCmdCopyBuffer(cmd, staging.buffer, newSurface.indexBuffer.buffer, 1,
-                    &indexCopy);
-  });
+      vkCmdCopyBuffer(cmd, staging.buffer, newSurface.vertexBuffer.buffer, 1,
+                      &vertexCopy);
 
-  destroy_buffer(staging);
+      VkBufferCopy indexCopy{0};
+      indexCopy.dstOffset = 0;
+      indexCopy.srcOffset = vertexBufferSize;
+      indexCopy.size = indexBufferSize;
 
+      vkCmdCopyBuffer(cmd, staging.buffer, newSurface.indexBuffer.buffer, 1,
+                      &indexCopy);
+    });
+
+    destroy_buffer(staging);
+  } catch (const std::exception &e) {
+    std::cerr << "Exception in uploadMesh: " << e.what() << std::endl;
+    // Clean up any allocated resources
+    if (newSurface.vertexBuffer.buffer != VK_NULL_HANDLE)
+      destroy_buffer(newSurface.vertexBuffer);
+    if (newSurface.indexBuffer.buffer != VK_NULL_HANDLE)
+      destroy_buffer(newSurface.indexBuffer);
+    return {};
+  }
   return newSurface;
 }
 
@@ -889,8 +970,10 @@ void VulkanEngine::init_mesh_pipeline() {
   pipelineBuilder.set_multisampling_none();
   pipelineBuilder.disable_blending();
   pipelineBuilder.disable_depthtest();
+
+  pipelineBuilder.enable_depthtest(true, VK_COMPARE_OP_GREATER_OR_EQUAL);
   pipelineBuilder.set_color_attachment_format(_drawImage.imageFormat);
-  pipelineBuilder.set_depth_format(VK_FORMAT_UNDEFINED);
+  pipelineBuilder.set_depth_format(_depthImage.imageFormat);
 
   _meshPipeline = pipelineBuilder.build_pipeline(_device);
 
@@ -933,4 +1016,7 @@ void VulkanEngine::init_default_data() {
     destroy_buffer(rectangle.indexBuffer);
     destroy_buffer(rectangle.vertexBuffer);
   });
+
+  // testMeshes = loadGltfMeshes(this, "../assets/monkey.glb").value();
+  //   auto testmesh = loadGltfMeshes(this, "../assets/basicmesh.glb");
 }

@@ -14,12 +14,16 @@ find_package(SDL2 REQUIRED)
 add_subdirectory(vk-bootstrap)
 file(GLOB VK_BOOTSTRAP_SRC "./vk-bootstrap/src/*.cpp")
 
+add_subdirectory(fastgltf)
+file(GLOB FASTGLTF_SRC "./fastgltf/include/fastgltf/*.hpp")
+
 # Include directories
 include_directories(
     ${Vulkan_INCLUDE_DIRS}
     ${SDL2_INCLUDE_DIRS}
     vk-bootstrap/src
     /usr/include  # ImGui headers
+    fastgltf/include/fastgltf
 )
 
 # Add the executable
@@ -33,6 +37,7 @@ target_link_libraries(VulkanSDLApp
     ${SDL2_LIBRARIES}
     vk-bootstrap::vk-bootstrap
     imgui  # Link ImGui library
+    fastgltf
 )
 
 # Shader compilation

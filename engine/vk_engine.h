@@ -1,9 +1,11 @@
 #pragma once
 
 #include "vk_descriptors.h"
+#include "vk_loader.h"
 #include "vk_pipelines.h"
 #include "vk_types.h"
 #include <functional>
+#include <memory>
 
 struct DeletionQueue {
   std::deque<std::function<void()>> deletors;
@@ -122,6 +124,13 @@ public:
 
   void init_mesh_pipeline();
 
+  GPUMeshBuffers uploadMesh(std::span<uint32_t> indices,
+                            std::span<Vertex> vertices);
+
+  std::vector<std::shared_ptr<MeshAsset>> testMeshes;
+
+  AllocatedImage _depthImage;
+
 private:
   void init_vulkan();
   void init_swapchain();
@@ -148,9 +157,6 @@ private:
                                 VmaMemoryUsage memoryUsage);
 
   void destroy_buffer(const AllocatedBuffer &buffer);
-
-  GPUMeshBuffers uploadMesh(std::span<uint32_t> indices,
-                            std::span<Vertex> vertices);
 
   void init_default_data();
 };
